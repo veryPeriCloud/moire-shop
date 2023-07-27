@@ -3,14 +3,16 @@ import { reactive, ref, computed, onMounted, watch } from "vue";
 import ProductFilter from "@/components/catalog/ProductFilter.vue";
 import ProductList from "@/components/catalog/ProductList.vue";
 import BasePagination from "@/components/ui/BasePagination.vue";
+import BaseLoader from "@/components/ui/BaseLoader.vue";
 import { API_BASE_URL } from "@/../config.js";
 import axios from "axios";
 
 const resolved = ref(false);
+const isLoadingFaild = ref(false);
 
 const productsData = ref(null);
 const page = ref(1);
-const productsPerPage = 6;
+const productsPerPage = 12;
 
 const filter = reactive({
   priceFrom: 0,
@@ -52,6 +54,7 @@ const fetchProducts = async() => {
       productsData.value = response.data;
     })
     .then(() => resolved.value = true)
+    .catch(() => isLoadingFaild.value = true)
 }
 
 const updateFilter = (d) => {
@@ -102,9 +105,18 @@ watch(filter, async()=> {
       <ProductFilter 
         @update="updateFilter"
         @reset="clearFilter"
-      />
+      />       
+      <section class="catalog">
+        <div class="content__uikit">
+          <base-loader v-if="!resolved" />
 
-      <section class="catalog" v-if="resolved">
+          <div v-if="isLoadingFaild" class="catalog__error">
+            <div class="catalog__error-container">
+              <p class="catalog__error-descr">Произошла ошибка при загрузке товаров</p>
+              <button @click.prevent="fetchProducts" class="button button--primery">Попробовать снова</button>
+            </div>
+          </div>
+        </div>
         <ProductList :products="products"/>
         
         <Base-Pagination
@@ -118,5 +130,13 @@ watch(filter, async()=> {
 </template>
 
 <style scoped>
+.catalog__error {
+  text-align: center;
+}
 
+.content__uikit{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 </style>
