@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { useNumberFormat } from "@/composables/format.ts";
 
 const props = defineProps({
   product: {
@@ -27,7 +28,7 @@ const pic = computed(()=> {
     </h3>
 
     <span class="catalog__price">
-      {{ props.product.price }} ₽
+      {{ useNumberFormat(props.product.price) }} ₽
     </span>
 
     <ul class="colors colors--black">
