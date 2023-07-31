@@ -40,9 +40,9 @@ await fetchProduct();
 
 const pic = computed(()=> {  
   if (currentProductColor.value === null) {
-    return product.value.colors[0].gallery ?  product.value.colors[0].gallery[0].file.url : './img/empty.jpg';
+    return product.value.colors[0].gallery ?  product.value.colors[0].gallery[0].file.url : '../img/empty.jpg';
   } else {
-    return currentProductColor.value.gallery ? currentProductColor.value.gallery[0].file.url : "./img/empty.jpg";
+    return currentProductColor.value.gallery ? currentProductColor.value.gallery[0].file.url : "../img/empty.jpg";
   }
 })
 
@@ -93,7 +93,7 @@ const addToCart = () => {
               @click.prevent="currentProductColor=color"
             >
               <img width="98" height="98" 
-                :src="color.gallery ? color.gallery[0].file.url : './img/empty.jpg'"
+                :src="color.gallery ? color.gallery[0].file.url : '../img/empty.jpg'"
                 :alt="product.title"
               >
             </a>
