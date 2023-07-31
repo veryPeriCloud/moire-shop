@@ -5,6 +5,7 @@ import { API_BASE_URL } from "@/../config.js";
 import axios from "axios";
 import { useNumberFormat } from "@/composables/format";
 import BaseLoader from "@/components/ui/BaseLoader.vue";
+import BaseCounter from "@/components/ui/BaseCounter.vue";
 
 const resolved = ref(false);
 const isLoadingFaild = ref(false);
@@ -50,6 +51,13 @@ const addToCart = () => {
   console.log('add to cart')
 }
 
+const productCount = ref(1);
+const incrementAmount = () => {
+  return productCount.value++;
+}
+const decrementAmount = () => {
+  productCount.value > 1 ? productCount.value-- : 1;
+}
 </script>
 
 <template>
@@ -111,21 +119,7 @@ const addToCart = () => {
             @submit.prevent="addToCart"
           >
             <div class="item__row item__row--center">
-              <div class="form__counter">
-                <button type="button" aria-label="Убрать один товар">
-                  <svg width="12" height="12" fill="currentColor">
-                    <use xlink:href="#icon-minus"></use>
-                  </svg>
-                </button>
-
-                <input type="text" value="1" name="count">
-
-                <button type="button" aria-label="Добавить один товар">
-                  <svg width="12" height="12" fill="currentColor">
-                    <use xlink:href="#icon-plus"></use>
-                  </svg>
-                </button>
-              </div>
+              <base-counter :count="productCount" @plus="incrementAmount" @minus="decrementAmount" />
               
               <b class="item__price">
                 {{ useNumberFormat(product.price) }} ₽
