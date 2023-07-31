@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
+import { useRoute } from "vue-router";
 import { useNumberFormat } from "@/composables/format.ts";
 
 const props = defineProps({
@@ -8,18 +9,25 @@ const props = defineProps({
   }
 });
 
+const currentColor = ref(null);
 const pic = computed(()=> {
-  return props.product.image ? props.product.image : "./img/empty.jpg";
+  if (currentColor.value === null) {
+    return props.product.image ? props.product.image : "./img/empty.jpg";
+  } else {
+    return currentColor.value.gallery ? currentColor.value.gallery[0].file.url : "./img/empty.jpg";
+  }
 })
+
+const route = useRoute();
 
 </script>
 
 <template>
   <li class="catalog__item">
-    <a class="catalog__pic" href="#">
+    <router-link class="catalog__pic" :to="{name: 'product', params: {slug: product.slug}}">
       <!-- to change src for color-->
       <img :src="pic" :alt="props.product.title">
-    </a>
+    </router-link>
 
     <h3 class="catalog__title">
       <a href="#">
@@ -34,7 +42,12 @@ const pic = computed(()=> {
     <ul class="colors colors--black">
       <li class="colors__item" v-for="color in props.product.colors" :key="color.id">
         <label class="colors__label">
-          <input class="colors__radio sr-only" type="radio" name="color-1" :value="color.color.code" checked="">
+          <input class="colors__radio sr-only"
+            type="radio"
+            name="color-1" 
+            :value="color.color.code"
+            @input="currentColor=color"
+          >
           <span class="colors__value" :style="{'background-color': color.color.code}">
           </span>
         </label>

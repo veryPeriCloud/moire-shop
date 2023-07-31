@@ -116,7 +116,12 @@ watch(filter, async()=> {
               <button @click.prevent="fetchProducts" class="button button--primery">Попробовать снова</button>
             </div>
           </div>
+
+          <p v-if="products.length === 0" >
+            К сожалению, товары отсутствуют.
+          </p>
         </div>
+        
         <ProductList :products="products"/>
         
         <Base-Pagination
