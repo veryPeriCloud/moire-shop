@@ -24,6 +24,7 @@ const categoriesData = ref(null);
 const materialsData = ref(null);
 const seasonsData = ref(null);
 const colorsData = ref(null);
+const isFiltered = ref(false)
 
 const emit = defineEmits(['update', 'reset']);
 
@@ -66,6 +67,7 @@ const colors = computed(() => {
 
 const submit = () => {
   emit('update', formData);
+  isFiltered.value = true;
 }
 const reset = () => {
   emit('reset', {
@@ -82,7 +84,7 @@ const reset = () => {
   formData.materialIds = [];
   formData.colorIds = [];
   formData.seasonIds = []
-
+  isFiltered.value = false;
 }
 </script>
 
@@ -134,7 +136,6 @@ const reset = () => {
               <input class="colors__check sr-only"
                 type="checkbox"
                 name="collection"
-                checked=""
                 :value="color.id"
                 v-model="formData.colorIds"
               >
@@ -193,6 +194,7 @@ const reset = () => {
         Применить
       </button>
       <button class="filter__reset button button--second" type="button"
+        :disabled="!isFiltered"
         @click.prevent="reset"
       >
         Сбросить

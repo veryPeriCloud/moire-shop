@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch, onMounted } from "vue";
-import { useRoute } from "vue-router";
-import { API_BASE_URL } from "@/../config.js";
-import axios from "axios";
-import { useNumberFormat } from "@/composables/format";
 import BaseLoader from "@/components/ui/BaseLoader.vue";
 import BaseCounter from "@/components/ui/BaseCounter.vue";
+import BaseModal from "@/components/ui/BaseModal.vue";
+import { ref, reactive, computed, watch, onMounted } from "vue";
+import { useNumberFormat } from "@/composables/format";
+import { API_BASE_URL } from "@/../config.js";
+import { useRoute } from "vue-router";
+import { useCartStore } from "@/stores/cart";
+import axios from "axios";
 
 const resolved = ref(false);
 const isLoadingFaild = ref(false);
@@ -13,6 +15,9 @@ const productData = ref(null);
 const route = useRoute();
 const currentTab = ref("info");
 const currentProductColor = ref(null);
+const error = ref(false);
+const showModal = ref(false);
+
 const tabs = [
   { name: "Информация о товаре", code: "info" },
   { name: "Доставка и возврат", code: "delivery" },
@@ -47,8 +52,21 @@ const pic = computed(()=> {
   }
 })
 
-const addToCart = () => {
-  console.log('add to cart')
+const cartStore = useCartStore();
+
+const addToCart = async() => {
+  formData.quantity = productCount.value;
+  formData.productId = productData.value.id;
+
+  if (formData.sizeId !== 0 && formData.colorId !== 0) {
+    error.value = false;
+    await cartStore.addProductToCart(formData)
+    .then(() => {
+      showModal.value = true;
+    });
+  } else {
+    error.value = true
+  }
 }
 
 const productCount = ref(1);
@@ -58,6 +76,7 @@ const incrementAmount = () => {
 const decrementAmount = () => {
   productCount.value > 1 ? productCount.value-- : 1;
 }
+
 </script>
 
 <template>
@@ -119,8 +138,13 @@ const decrementAmount = () => {
             @submit.prevent="addToCart"
           >
             <div class="item__row item__row--center">
-              <base-counter :count="productCount" @plus="incrementAmount" @minus="decrementAmount" />
-              
+              <base-counter
+                :count="productCount"
+                @plus="incrementAmount"
+                @minus="decrementAmount"
+                v-model="formData.quantity"
+              />
+             
               <b class="item__price">
                 {{ useNumberFormat(product.price) }} ₽
               </b>
@@ -138,7 +162,7 @@ const decrementAmount = () => {
                       <input class="colors__radio sr-only"
                         type="radio"
                         name="color-1"
-                        :value="color.color.code"
+                        :value="color.color.id"
                         v-model="formData.colorId"
                         @input="currentProductColor=color"
                       >
@@ -153,7 +177,7 @@ const decrementAmount = () => {
               <fieldset class="form__block">
                 <legend class="form__legend">Размер</legend>
                 <label class="form__label form__label--small form__label--select">
-                  <select class="form__select" name="category" v-model="product.size">
+                  <select class="form__select" name="category" v-model="formData.sizeId">
                     <option 
                       v-for="size in product.sizes"
                       :key="size.id"
@@ -169,6 +193,9 @@ const decrementAmount = () => {
             <button class="item__button button button--primery" type="submit">
               В корзину
             </button>
+            <p v-if="error">
+              <div>Выберите, пожалуйста, цвет и размер товара</div>
+            </p>
           </form>
         </div>
       </div>
@@ -226,6 +253,22 @@ const decrementAmount = () => {
       </div>
     </section>
   </main>
+  <teleport to="body">
+    <base-modal :show="showModal" >
+      <template #body>
+        <p>Довар добавлен в корзину</p>
+      </template>
+      <template #footer>
+        <router-link class="button button--second" :to="{name:'cart'}">Перейти в корзину</router-link>
+        <button
+          class="button button--primery button--tocart"
+          @click.prevent="showModal = false">
+          OK
+        </button>
+      </template>
+    </base-modal>
+  </teleport>
+
 </template>
 
 <style scoped>
