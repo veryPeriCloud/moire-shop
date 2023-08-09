@@ -40,7 +40,7 @@ const cartProducts = computed(() => cartStore.cartDetailProducts);
           <ul class="cart__list">
             <Cart-Item
               v-for="item in cartProducts"
-              :key="item.propductId"
+              :key="item.id"
               :item="item" />
           </ul>
         </div>
@@ -53,9 +53,13 @@ const cartProducts = computed(() => cartStore.cartDetailProducts);
             Итого: <span>{{ useNumberFormat(cartStore.getCartTotalSumm) }} ₽</span>
           </p>
 
-          <button class="cart__button button button--primery" type="submit">
-            Оформить заказ
-          </button>
+          <router-link :to="{name: 'order'}" v-slot="{ href, navigate }">
+            <button :href="href" class="cart__button button button--primery" type="submit"
+            @click="navigate"
+            >
+              Оформить заказ
+            </button>
+          </router-link>
         </div>
       </form>
     </section>

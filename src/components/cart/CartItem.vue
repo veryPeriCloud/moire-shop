@@ -1,25 +1,38 @@
 <script setup lang="ts">
 import BaseCounter from "@/components/ui/BaseCounter.vue";
 import { useNumberFormat } from "@/composables/format";
+import { computed, onMounted } from "vue";
+import { useCartStore } from "@/stores/cart";
 
+const cartStore = useCartStore();
 const props = defineProps({
   item: {
     type: Object
   }
 });
+const pic = computed(()=> {  
+  return props.item.color.gallery? props.item.color.gallery[0].file.url : '../img/empty.jpg';
+})
 
-const incrementAmount = () => {
-  props.item.quantity++;
-  console.log('incrementAmount', props.item.quantity)
-};
-const decrementAmount = () => {
-  props.item.quantity > 1 ? props.item.quantity-- : 1;
-  console.log('decrementAmount', props.item.quantity)
+const amount = computed({
+  get() {
+    return props.item.quantity;
+  },
+  set(value) {
+    cartStore.updateCartProductAmount({ basketItemId: props.item.id, quantity: value })
+  }
+})
+
+const deleteProduct = async(id) =>{
+  await cartStore.deleteCartProduct(id)
+    .then(async() => {
+      await cartStore.fetchCart();
+    })
 }
 </script>
 
 <template>
-  <li class="cart__item product">
+  <li class="cart__item product" v-if="props.item">
     <div class="product__pic">
       <img :src="props.item.image" width="120" height="120" :alt="props.item.product.title">
     </div>
@@ -39,18 +52,15 @@ const decrementAmount = () => {
       Артикул: {{ props.item.productId }}
     </span>
 
-    <base-counter
-      :count="props.item.quantity"
-      @plus="incrementAmount"
-      @minus="decrementAmount"
-      v-model:count="props.item.quantity"
-    />
+    <base-counter v-model.number="amount" />
 
     <b class="product__price">
       {{ useNumberFormat(props.item.price * props.item.quantity) }} ₽
     </b>
 
-    <button class="product__del button-del" type="button" aria-label="Удалить товар из корзины">
+    <button class="product__del button-del" type="button" aria-label="Удалить товар из корзины"
+      @click.prevent="deleteProduct(props.item.id)"
+    >
       <svg width="20" height="20" fill="currentColor">
         <use xlink:href="#icon-close"></use>
       </svg>
@@ -61,5 +71,14 @@ const decrementAmount = () => {
 <style>
 .button-del {
   cursor: pointer;
+}
+
+.button-del:hover svg {
+  color: #9D9D9D;
+}
+
+.button-del:hover svg {
+  /* #9D9D9D */
+  color: #e02d71;
 }
 </style>

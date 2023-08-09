@@ -55,7 +55,7 @@ const pic = computed(()=> {
 const cartStore = useCartStore();
 
 const addToCart = async() => {
-  formData.quantity = productCount.value;
+  formData.quantity = amount.value;
   formData.productId = productData.value.id;
 
   if (formData.sizeId !== 0 && formData.colorId !== 0) {
@@ -70,12 +70,15 @@ const addToCart = async() => {
 }
 
 const productCount = ref(1);
-const incrementAmount = () => {
-  return productCount.value++;
-}
-const decrementAmount = () => {
-  productCount.value > 1 ? productCount.value-- : 1;
-}
+
+const amount = computed({
+  get() {
+    return productCount.value;
+  },
+  set(value) {
+    productCount.value = value;
+  }
+})
 
 </script>
 
@@ -107,7 +110,6 @@ const decrementAmount = () => {
     </div>
     <section class="item">
       <div class="item__pics pics">
-        <!-- to change main image when click on change color-->
         <div class="pics__wrapper">
           <img width="570" height="570"
             :src="pic"
@@ -138,12 +140,7 @@ const decrementAmount = () => {
             @submit.prevent="addToCart"
           >
             <div class="item__row item__row--center">
-              <base-counter
-                :count="productCount"
-                @plus="incrementAmount"
-                @minus="decrementAmount"
-                v-model="formData.quantity"
-              />
+              <base-counter v-model.number="amount" />
              
               <b class="item__price">
                 {{ useNumberFormat(product.price) }} ₽
@@ -172,7 +169,6 @@ const decrementAmount = () => {
                   </li>
                 </ul>
               </fieldset>
-
 
               <fieldset class="form__block">
                 <legend class="form__legend">Размер</legend>

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Products from "@/pages/products/index.vue";
 import ProductPage from "@/pages/product/index.vue";
 import CartPage from "@/pages/cart/index.vue";
+import OrderPage from "@/pages/order/index.vue";
 import NotFoundPage from "@/pages/notFound/index.vue";
 
 const router = createRouter({
@@ -21,6 +22,11 @@ const router = createRouter({
       path: '/cart',
       name: 'cart',
       component: CartPage
+    },
+    {
+      path: '/order',
+      name: 'order',
+      component: OrderPage
     },
     {
       path: '/:pathMatch(.*)*',
