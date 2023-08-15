@@ -3,6 +3,7 @@ import Products from "@/pages/products/index.vue";
 import ProductPage from "@/pages/product/index.vue";
 import CartPage from "@/pages/cart/index.vue";
 import OrderPage from "@/pages/order/index.vue";
+import ProcessedPage from "@/pages/order/processed.vue";
 import NotFoundPage from "@/pages/notFound/index.vue";
 
 const router = createRouter({
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/order',
       name: 'order',
       component: OrderPage
+    },
+    {
+      path: '/order/success',
+      name: 'order-processed',
+      component: ProcessedPage
     },
     {
       path: '/:pathMatch(.*)*',

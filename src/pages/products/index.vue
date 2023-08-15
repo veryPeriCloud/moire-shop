@@ -117,7 +117,7 @@ watch(filter, async()=> {
             </div>
           </div>
 
-          <p v-if="products.length === 0" >
+          <p v-if="products.length === 0 && resolved" >
             К сожалению, товары отсутствуют.
           </p>
         </div>

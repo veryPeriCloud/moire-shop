@@ -54,8 +54,9 @@ const cartProducts = computed(() => cartStore.cartDetailProducts);
           </p>
 
           <router-link :to="{name: 'order'}" v-slot="{ href, navigate }">
-            <button :href="href" class="cart__button button button--primery" type="submit"
-            @click="navigate"
+            <button :href="href" class="cart__button button button--primery"
+              type="submit"
+              @click="navigate"
             >
               Оформить заказ
             </button>
