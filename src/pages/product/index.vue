@@ -2,7 +2,7 @@
 import BaseLoader from "@/components/ui/BaseLoader.vue";
 import BaseCounter from "@/components/ui/BaseCounter.vue";
 import BaseModal from "@/components/ui/BaseModal.vue";
-import { ref, reactive, computed, watch, onMounted } from "vue";
+import { ref, reactive, computed } from "vue";
 import { useNumberFormat } from "@/composables/format";
 import { API_BASE_URL } from "@/../config.js";
 import { useRoute } from "vue-router";
@@ -36,9 +36,9 @@ const formData = reactive({
 
 const fetchProduct = async() => {
   axios.get(`${API_BASE_URL}/api/products/${route.params.slug}`)
-    .then((response) =>  {productData.value = response.data; })
-    .catch(() => { isLoadingFaild.value = true; })
-    .then(() => { resolved.value = true; });
+    .then((response) => productData.value = response.data)
+    .catch(() => isLoadingFaild.value = true)
+    .then(() => resolved.value = true);
 }
 
 const product = computed(() => productData.value ? productData.value : {});

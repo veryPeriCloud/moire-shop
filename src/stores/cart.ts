@@ -1,4 +1,3 @@
-import { ref, computed } from 'vue'
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { API_BASE_URL } from "@/../config.js";
@@ -133,6 +132,5 @@ export const useCartStore = defineStore('cart', {
           console.log(e)
         })
     },
-
   },
 })

@@ -4,14 +4,13 @@ import { useCartStore } from "@/stores/cart";
 import { useOrderStore } from "@/stores/order";
 import { useNumberFormat } from "@/composables/format";
 import { API_BASE_URL } from "@/../config.js";
-import { useVuelidate } from "@vuelidate/core";
-import { required, email, minLength } from "@vuelidate/validators";
+import { useRouter } from "vue-router";
 import OrderCartItem from "@/components/order/OrderCartItem.vue";
 import BaseInput from "@/components/ui/BaseInput.vue";
 import BaseTextarea from "@/components/ui/BaseTextarea.vue";
 import BaseRadioButton from "@/components/ui/BaseRadioButton.vue";
 import axios from "axios";
-import { useRouter } from "vue-router";
+
 
 const formData = reactive({
   name: "",
@@ -23,43 +22,18 @@ const formData = reactive({
   comment: ""
 });
 
-const rules = computed(() => {
-  return {
-    formData: {
-      name: {
-        required,
-        minLength: minLength(8),
-      },
-      address: {
-        required,
-        minLength: minLength(8),
-      },
-      phone: {
-        required,
-        minLength: minLength(11),
-      },
-      email: {
-        required,
-        email,
-        minLength: minLength(4),
-      },
-    },
-  };
-});
-
-const v$ = useVuelidate(rules, { formData });
-
 const cartStore = useCartStore();
 const orderStore = useOrderStore();
 const router = useRouter();
+
+const payments = ref([]);
+let deliveryCost = ref(0);
+
+const formError = computed(() => orderStore.getErrors);
 const products = computed(() => cartStore.cartDetailProducts);
 
 await orderStore.fetchDeliveries();
 const deliveries = computed(()=> orderStore.getDeliveries);
-const payments = ref([]);
-let deliveryCost = ref(0);
-const isOrderFailed = ref(false);
-
 let orderTotalSumm = computed(() => cartStore.getCartTotalSumm);
 
 const fetchPayments = async() => {
@@ -73,8 +47,10 @@ const fetchPayments = async() => {
   })
 }
 
+// Todo - too much requests!
 watch(formData, async () => {
   if (formData.deliveryTypeId !== 0) {
+    
     await fetchPayments();
     deliveryCost = computed(() => {
       return Number(deliveries.value.find((item) => item.id === formData.deliveryTypeId).price);
@@ -87,20 +63,14 @@ watch(formData, async () => {
         return cartStore.getCartTotalSumm + Number(deliveryCost.value);
       }
     })
-  }
+  } else return
 });
 
 const createOrder = async () => {
-  try {
-    await orderStore.createOrder(formData)
-      .then(()=>{
-        router.push({ name: 'order-processed'})
-      })
-  }
-  catch (e) {
-    console.log(e);
-    isOrderFailed.value = true;
-  }
+  await orderStore.createOrder(formData)
+    .then(() => {
+      router.push({ name: 'order-info', params: {id: orderStore.orderInfo.id}})
+    })
 }
 
 </script>
@@ -141,23 +111,24 @@ const createOrder = async () => {
         <div class="cart__field">
           <div class="cart__data">
             <base-input
-              v-model="v$.formData.name.$model"
+              v-model="formData.name"
               placeholder="Введите ваше полное имя"
-              :error="v$.formData.name" title="ФИО" />
+              :error="formError.name" />
             <base-input
-              v-model="v$.formData.address.$model"
-              :error="v$.formData.address"
+              v-model="formData.address"
               placeholder="Введите ваш адрес"
+              :error="formError.address"
               title="Адрес доставки" />
             <base-input
-              v-model="v$.formData.phone.$model"
-              :error="v$.formData.phone"
+              v-model="formData.phone"
               placeholder="+7 999 999 99 99"
+              :type="'tel'"
+              :error="formError.phone"
               title="Телефон" />
             <base-input
-              v-model="v$.formData.email.$model"
-              :error="v$.formData.email"
+              v-model="formData.email"
               placeholder="Введи ваш Email"
+              :error="formError.email"
               title="Email" />
             <base-textarea
               v-model="formData.comment"
@@ -205,15 +176,15 @@ const createOrder = async () => {
           </div>
 
           <button class="cart__button button button--primery" type="submit"
-            :disabled="v$.$invalid || formData.deliveryTypeId === 0 || formData.paymentTypeId === 0"
+            :disabled="formData.deliveryTypeId === 0 || formData.paymentTypeId === 0"
           >
             Оформить заказ
           </button>
         </div>
-        <div class="cart__error form__error-block" v-if="isOrderFailed">
+        <div class="cart__error form__error-block" v-if="orderStore.formErrorMessage">
           <h4>Заявка не отправлена!</h4>
           <p>
-            Похоже произошла ошибка. Попробуйте отправить снова или перезагрузите страницу.
+            {{ orderStore.formErrorMessage }}
           </p>
         </div>
       </form>

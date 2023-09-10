@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue";
 
 const props = defineProps({
   modelValue: {
@@ -36,7 +35,6 @@ const onInput = (e) => {
     </textarea>
     <span class="form__value">{{ props.title }}</span>
   </label>
-  <!-- <p v-if="true" class="form__error">{{ errorText }}</p> -->
 </template>
 
 <style>
