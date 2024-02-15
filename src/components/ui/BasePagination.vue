@@ -72,7 +72,7 @@ const getPageUrl = (page: number) => {
         :class="{'pagination__link--disabled': currentPage >= totalPages}"
         href="#"
         aria-label="Следующая страница"
-        @click.prevent="emit('update', currentPage)"
+        @click.prevent="emit('update', currentPage + 1)"
       >
         <svg width="8" height="14" fill="currentColor">
           <use xlink:href="#icon-arrow-right"></use>

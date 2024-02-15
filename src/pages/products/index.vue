@@ -6,6 +6,7 @@ import BasePagination from "@/components/ui/BasePagination.vue";
 import BaseLoader from "@/components/ui/BaseLoader.vue";
 import { useProductsStore } from "@/stores/products.ts";
 import { useRoute, useRouter } from "vue-router";
+import type { IFilter } from "@/types/Products";
 
 const route = useRoute();
 const router = useRouter();
@@ -19,8 +20,6 @@ const countOfProducts = computed(() => productsStore.getProductsCount);
 const totalPages = computed(() => productsStore.getTotalPages);
 
 onMounted(async()=> {
-  console.log('onmounted',route.query)
-
   try {
     // @todo
     productsStore.setFilters(route.query);
@@ -33,28 +32,27 @@ onMounted(async()=> {
 })
 
 
-const updateFilter = async (filters) => {
+const updateFilter = async (filters: IFilter): Promise<void>  => {
   productsStore.setCatalogFilter(filters);
   productsStore.setPageFilter(1);
   await updateProducts(productsStore.getFilters);
 }
 
-const clearFilter = async () => {
+const clearFilter = async (): Promise<void>  => {
   productsStore.clearFilters();
   await updateProducts(productsStore.getFilters);
 }
 
-const updatePage = async (page) => {
+const updatePage = async (page: number): Promise<void> => {
   productsStore.setPageFilter(page);
   await updateProducts(productsStore.getFilters);
 }
 
-const updateProducts = async (filters) =>{
+const updateProducts = async (filters: IFilter): Promise<void> =>{
   resolved.value = false;
-  console.log(filters)
+
   productsStore.setFilters(filters);
   router.push(route.path + "?" + productsStore.getFiltersAsUrl);
-  console.log()
   await productsStore.fetchProducts()
     .then(() => resolved.value = true);
 }
@@ -75,7 +73,7 @@ const updateProducts = async (filters) =>{
     </div>
 
     <div class="content__catalog">
-      <ProductFilter 
+      <ProductFilter
         @update="updateFilter"
         @reset="clearFilter"
       />       
@@ -86,7 +84,7 @@ const updateProducts = async (filters) =>{
           <div v-if="isLoadingFaild" class="catalog__error">
             <div class="catalog__error-container">
               <p class="catalog__error-descr">Произошла ошибка при загрузке товаров</p>
-              <button @click.prevent="updateProducts" class="button button--primery">Попробовать снова</button>
+              <button @click="() => updateProducts" class="button button--primery">Попробовать снова</button>
             </div>
           </div>
 

@@ -1,28 +1,8 @@
+
 import { defineStore } from 'pinia';
 import axios from 'axios';
-
-interface IProduct {
-
-}
-
-function useSerialize(obj: any) {
-  const str = [];
-  for (let key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      if (obj[key] !== null) {
-        // str.push(encodeURIComponent(key) + "=" + encodeURIComponent(obj[key]));
-        if (Array.isArray(obj[key])) {
-          for (let i in obj[key]) {
-            str.push(encodeURIComponent(key) + "[]=" + obj[key][i]);
-          }
-        } else {
-          str.push(encodeURIComponent(key) + "=" + encodeURIComponent(obj[key]));
-        }
-      }
-    }  
-  }
-  return str.join("&");
-}
+import { useSerialize } from '@/composables/serialize';
+import type { IProduct, IFilter, IParams } from "@/types/Products.d.ts";
 
 export const useProductsStore = defineStore('products', {
   state: () => ({ 
@@ -42,10 +22,9 @@ export const useProductsStore = defineStore('products', {
       seasonIds: null,
       colorIds: null
     }
-
   }),
   getters: {
-    getProducts: (state) => {
+    getProducts: (state): IProduct[] => {
       if (state.products === null) {
         return [];
       }
@@ -57,19 +36,20 @@ export const useProductsStore = defineStore('products', {
         };
       })
     },
-    getProductsCount: (state) => state.pagination.total,
-    getTotalPages: (state) => {
+    getProductsCount: (state): number => state.pagination.total ? state.pagination.total : 0,
+    getTotalPages: (state): number => {
       if (state.pagination.total) {
         return Math.ceil(state.pagination.total / state.pagination.perPage);
+      } else {
+        return 0;
       }
     },
-    getFilters: (state) => state.filters,
-    getFiltersAsUrl: (state) => useSerialize(state.filters),
+    getFilters: (state): IFilter => state.filters,
+    getFiltersAsUrl: (state): string => useSerialize(state.filters),
 
   },
   actions: {
-    setFilters(query) {
-      console.log('setFilters query', query)
+    setFilters(query): void {
       if (query.page) this.filters.page = query.page;
       if (query.minPrice) this.filters.minPrice = query.minPrice;
       if (query.maxPrice) this.filters.maxPrice = query.maxPrice;
@@ -77,14 +57,13 @@ export const useProductsStore = defineStore('products', {
       if (query.materialIds) this.filters.materialIds = query.materialIds;
       if (query.seasonIds) this.filters.seasonIds = query.seasonIds;
       if (query.colorIds) this.filters.colorIds = query.colorIds;
-      // console.log('setFilters', this.filters)
     },
 
-    setPageFilter(page) {
+    setPageFilter(page: number): void {
       this.filters.page = page;
     },
 
-    setCatalogFilter(query) {
+    setCatalogFilter(query): void {
       if (query.minPrice) this.filters.minPrice = query.minPrice;
       if (query.maxPrice) this.filters.maxPrice = query.maxPrice;
       if (query.categoryId) this.filters.categoryId = query.categoryId;
@@ -93,7 +72,7 @@ export const useProductsStore = defineStore('products', {
       if (query.colorIds) this.filters.colorIds = query.colorIds;
     },
 
-    clearFilters() {
+    clearFilters(): void {
       this.filters.page = 1;
       this.filters.minPrice = null;
       this.filters.maxPrice = null;
@@ -103,24 +82,22 @@ export const useProductsStore = defineStore('products', {
       this.filters.colorIds = null;
     },
 
-    async fetchProducts() {
+    async fetchProducts(): Promise<void> {
       const params = {
         limit: this.pagination.perPage,
         ...this.filters
-      }
-      // console.log('params', params)
+      } as IParams;
       await axios.get('https://vue-moire.skillbox.cc/api/products', {
         params: params,
-        // paramsSerializer: {
-        //   indexes: false
-        // },
+        paramsSerializer: {
+          indexes: false
+        },
       })      
         .then((response) => {
-          // console.log('params', params)
           this.products = response.data;
           this.pagination.total = response.data.pagination.total;
         })
-        .catch((err) => {
+        .catch((err: Error) => {
           console.error(err)
         })
     }
