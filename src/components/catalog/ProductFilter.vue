@@ -4,16 +4,16 @@ import { API_BASE_URL } from "@/../config.js";
 import axios from "axios";
 
 type FormData = {
-  priceFrom: Number,
-  priceTo: Number,
+  minPrice: Number,
+  maxPrice: Number,
   categoryId: Number,
   materialIds: Array<Number>,
   seasonIds: Array<Number>,
   colorIds: Array<Number>,
 }
 const formData: FormData = reactive({
-  priceFrom: 0,
-  priceTo: 0,
+  minPrice: 0,
+  maxPrice: 0,
   categoryId: 0,
   materialIds: [],
   seasonIds: [],
@@ -71,15 +71,15 @@ const submit = () => {
 }
 const reset = () => {
   emit('reset', {
-    priceFrom: 0,
-    priceTo: 0,
+    minPrice: 0,
+    maxPrice: 0,
     categoryId: 0,
     materialIds: [],
     seasonIds: [],
     colorIds: [],
   });
-  formData.priceFrom = 0;
-  formData.priceTo = 0;
+  formData.minPrice = 0;
+  formData.maxPrice = 0;
   formData.categoryId = 0;
   formData.materialIds = [];
   formData.colorIds = [];
@@ -97,13 +97,13 @@ const reset = () => {
         <legend class="form__legend">Цена</legend>
         <label class="form__label form__label--price">
           <input class="form__input" type="text" name="min-price" 
-            v-model="formData.priceFrom"
+            v-model="formData.minPrice"
           >
           <span class="form__value">От</span>
         </label>
         <label class="form__label form__label--price">
           <input class="form__input" type="text" name="max-price"
-            v-model="formData.priceTo"
+            v-model="formData.maxPrice"
           >
           <span class="form__value">До</span>
         </label>

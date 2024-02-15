@@ -2,66 +2,82 @@
 import { computed } from 'vue';
 
 const props = defineProps({
-  modelValue: {
-    type: Number,
-    default: 1,
+  path: {
+    type: String,
+    required: true,
   },
-  count: {
+  totalPages: {
     type: Number,
-    default: 1,
+    default: 0
   },
-  perPage: {
-    type: Number,
-    default: 1,
+  query: {
+    type: Object,
+    default: () => {}
   }
 });
-const emits = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update']);
+const currentPage = computed((): number => {
+  return props.query.page !== undefined
+    ? parseInt(props.query.page)
+    : 1
+});
 
-const pages = computed(()=> Math.ceil(props.count / props.perPage));
-
-const paginate = (page) => {
-  emits('update:modelValue', page);
-}
-const prevPage = (page) => {
-  emits('update:modelValue', page - 1);
-}
-const nextPage = (page) =>{
-  emits('update:modelValue', page + 1);
-}
+const getPageUrl = (page: number) => {
+  let q = JSON.parse(JSON.stringify(props.query));
+  q.page = page;
+  return (
+    props.path +
+    "?" +
+    Object.keys(q)
+      .map((key) => {
+        return key + "=" + q[key];
+      })
+      .join("&")
+  );
+};
 </script>
 
 <template>
   <ul class="catalog__pagination pagination">
     <li class="pagination__item">
-      <a class="pagination__link pagination__link--arrow"
-        :class="{'pagination__link--disabled': props.modelValue <= 1}"
+      <router-link
+        :to="getPageUrl(currentPage - 1)"
+        class="pagination__link pagination__link--arrow"
+        :class="{'pagination__link--disabled': currentPage <= 1}"
         aria-label="Предыдущая страница"
-        @click.prevent="prevPage(props.modelValue)"
+        @click.prevent="emit('update', currentPage - 1)"
       >
         <svg width="8" height="14" fill="currentColor">
           <use xlink:href="#icon-arrow-left"></use>
         </svg>
-      </a>
+      </router-link>
     </li>
-    <li class="pagination__item" v-for="pageNumber in pages" :key="pageNumber">
-      <a class="pagination__link" 
-        :class="{'pagination__link--current': pageNumber === props.modelValue}"
-        @click.prevent="paginate(pageNumber)"
+    <li class="pagination__item"
+      v-for="pageNumber in props.totalPages"
+      :key="pageNumber"
+    >
+      <router-link
+        :to="getPageUrl(pageNumber)"
+        class="pagination__link" 
+        :class="{'pagination__link--current': pageNumber === currentPage}"
+        @click.prevent="emit('update', pageNumber)"
       >
         {{ pageNumber }}
-      </a>
+      </router-link>
     </li>
     <li class="pagination__item">
-      <a class="pagination__link pagination__link--arrow"
-        :class="{'pagination__link--disabled': props.modelValue >= pages}"
+      <router-link
+        :to="getPageUrl(currentPage + 1)"
+        class="pagination__link pagination__link--arrow"
+        :class="{'pagination__link--disabled': currentPage >= totalPages}"
         href="#"
         aria-label="Следующая страница"
-        @click.prevent="nextPage(props.modelValue)"
+        @click.prevent="emit('update', currentPage)"
       >
         <svg width="8" height="14" fill="currentColor">
           <use xlink:href="#icon-arrow-right"></use>
         </svg>
-      </a>
+      </router-link>
     </li>
   </ul>
 </template>
