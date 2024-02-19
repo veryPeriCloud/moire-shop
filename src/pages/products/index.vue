@@ -4,9 +4,9 @@ import ProductFilter from "@/components/catalog/ProductFilter.vue";
 import ProductList from "@/components/catalog/ProductList.vue";
 import BasePagination from "@/components/ui/BasePagination.vue";
 import BaseLoader from "@/components/ui/BaseLoader.vue";
-import { useProductsStore } from "@/stores/products.ts";
+import { useProductsStore } from "@/stores/products";
 import { useRoute, useRouter } from "vue-router";
-import type { IFilter } from "@/types/Products";
+import type { IFilter, IProductColors, IProductSeasons, IProductMaterials, IProductCategory } from "@/types/Products.d.ts";
 
 const route = useRoute();
 const router = useRouter();
@@ -19,18 +19,27 @@ const products = computed(() => productsStore.getProducts);
 const countOfProducts = computed(() => productsStore.getProductsCount);
 const totalPages = computed(() => productsStore.getTotalPages);
 
+const categories = computed((): IProductCategory[] => productsStore.getCategories);
+const materials = computed((): IProductMaterials[] => productsStore.getMaterials);
+const seasons = computed((): IProductSeasons[] => productsStore.getSeasons);
+const colors = computed((): IProductColors[] => productsStore.getColors);
+
 onMounted(async()=> {
   try {
-    // @todo
     productsStore.setFilters(route.query);
+    productsStore.setCatalogFilter(route.query);
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
   await productsStore.fetchProducts()
     .then(() => resolved.value = true)
-    .catch(() => isLoadingFaild.value = true)
-})
+    .catch(() => isLoadingFaild.value = true);
 
+  await productsStore.fetchCategories();
+  await productsStore.fetchMaterials();
+  await productsStore.fetchSeasons();
+  await productsStore.fetchColors();
+})
 
 const updateFilter = async (filters: IFilter): Promise<void>  => {
   productsStore.setCatalogFilter(filters);
@@ -74,6 +83,11 @@ const updateProducts = async (filters: IFilter): Promise<void> =>{
 
     <div class="content__catalog">
       <ProductFilter
+        v-model="productsStore.getFilters"
+        :categories="categories"
+        :materials="materials"
+        :seasons="seasons"
+        :colors="colors"
         @update="updateFilter"
         @reset="clearFilter"
       />       

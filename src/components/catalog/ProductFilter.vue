@@ -1,90 +1,35 @@
 <script setup lang="ts">
-import { ref, computed, watch, reactive, onMounted } from "vue";
-import { API_BASE_URL } from "@/../config.js";
-import axios from "axios";
+const props = defineProps({
+  modelValue: {
+    type: Object,
+    required: true,
+  },
+  categories: {
+    type: Array,
+    required: true,
+  },
+  materials: {
+    type: Array,
+    required: true,
+  },
+  seasons: {
+    type: Array,
+    required: true,
+  },
+  colors: {
+    type: Array,
+    required: true,
+  },
+});
 
-type FormData = {
-  minPrice: Number,
-  maxPrice: Number,
-  categoryId: Number,
-  materialIds: Array<Number>,
-  seasonIds: Array<Number>,
-  colorIds: Array<Number>,
-}
-const formData: FormData = reactive({
-  minPrice: 0,
-  maxPrice: 0,
-  categoryId: 0,
-  materialIds: [],
-  seasonIds: [],
-  colorIds: [],
-})
+const emit = defineEmits(["update", "reset", "update:modelValue"]);
 
-const categoriesData = ref(null);
-const materialsData = ref(null);
-const seasonsData = ref(null);
-const colorsData = ref(null);
-const isFiltered = ref(false)
-
-const emit = defineEmits(['update', 'reset']);
-
-const fetchCategories = async() => {
-  axios.get(`${API_BASE_URL}/api/productCategories`)
-    .then((response) => { categoriesData.value = response.data; });
-}
-const fetchMaterial = async() => {
-  axios.get(`${API_BASE_URL}/api/materials`)
-    .then((response) => { materialsData.value = response.data; });
-}
-const fetchSeasons = async() => {
-  axios.get(`${API_BASE_URL}/api/seasons`)
-    .then((response) => { seasonsData.value = response.data; });
-}
-const fetchColors = async() => {
-  axios.get(`${API_BASE_URL}/api/colors`)
-    .then((response) => { colorsData.value = response.data; });
+const submit = (): void => {
+  emit('update', props.modelValue);
 }
 
-onMounted(async()=>{
-  await fetchCategories();
-  await fetchMaterial();
-  await fetchSeasons();
-  await fetchColors();
-})
-
-const categories = computed(() => {
-  return categoriesData.value ? categoriesData.value.items : [];
-})
-const materials = computed(() => {
-  return materialsData.value ? materialsData.value.items : [];
-})
-const seasons = computed(() => {
-  return seasonsData.value ? seasonsData.value.items : [];
-})
-const colors = computed(() => {
-  return colorsData.value ? colorsData.value.items : [];
-})
-
-const submit = () => {
-  emit('update', formData);
-  isFiltered.value = true;
-}
-const reset = () => {
-  emit('reset', {
-    minPrice: 0,
-    maxPrice: 0,
-    categoryId: 0,
-    materialIds: [],
-    seasonIds: [],
-    colorIds: [],
-  });
-  formData.minPrice = 0;
-  formData.maxPrice = 0;
-  formData.categoryId = 0;
-  formData.materialIds = [];
-  formData.colorIds = [];
-  formData.seasonIds = []
-  isFiltered.value = false;
+const reset = ():void => {
+  emit('reset');
 }
 </script>
 
@@ -96,14 +41,20 @@ const reset = () => {
       <fieldset class="form__block">
         <legend class="form__legend">Цена</legend>
         <label class="form__label form__label--price">
-          <input class="form__input" type="text" name="min-price" 
-            v-model="formData.minPrice"
+          <input
+            class="form__input"
+            type="text"
+            name="min-price" 
+            v-model.number="modelValue.minPrice"
           >
           <span class="form__value">От</span>
         </label>
         <label class="form__label form__label--price">
-          <input class="form__input" type="text" name="max-price"
-            v-model="formData.maxPrice"
+          <input
+            class="form__input"
+            type="text"
+            name="max-price"
+            v-model.number="modelValue.maxPrice"
           >
           <span class="form__value">До</span>
         </label>
@@ -112,10 +63,14 @@ const reset = () => {
       <fieldset class="form__block">
         <legend class="form__legend">Категория</legend>
         <label class="form__label form__label--select">
-          <select class="form__select" name="category" v-model="formData.categoryId">
+          <select
+            class="form__select"
+            name="category"
+            v-model="modelValue.categoryId"
+          >
             <option value="0">Все категории</option>
             <option
-              v-for="category in categories"
+              v-for="category in props.categories"
               :key="category.id"
               :value="category.id"
             >
@@ -129,17 +84,21 @@ const reset = () => {
         <legend class="form__legend">Цвет</legend>
         <ul class="colors">
           <li class="colors__item"
-            v-for="color in colors"
+            v-for="color in props.colors"
             :key="color.id"
           >
             <label class="colors__label">
-              <input class="colors__check sr-only"
+              <input
+                class="colors__check sr-only"
                 type="checkbox"
                 name="collection"
                 :value="color.id"
-                v-model="formData.colorIds"
+                v-model="modelValue.colorIds"
               >
-              <span class="colors__value" :style="{ backgroundColor: color.code}"></span>
+              <span
+                class="colors__value"
+                :style="{ backgroundColor: color.code}"
+              ></span>
             </label>
           </li>
         </ul>
@@ -149,14 +108,17 @@ const reset = () => {
         <legend class="form__legend">Материал</legend>
         <ul class="check-list">          
           <li class="check-list__item"
-            v-for="material in materials"
+            v-for="material in props.materials"
             :key="material.id"            
           >
             <label class="check-list__label">
-              <input class="check-list__check sr-only" type="checkbox" name="material"
+              <input
+                class="check-list__check sr-only"
+                type="checkbox"
+                name="material"
                 :value="material.id"
-                v-model="formData.materialIds"
-              >
+                v-model="modelValue.materialIds"
+              >              
               <span class="check-list__desc">
                 {{ material.title }} 
                 <span>({{ material.productsCount }})</span>
@@ -170,7 +132,7 @@ const reset = () => {
         <legend class="form__legend">Коллекция</legend>
         <ul class="check-list">
           <li class="check-list__item"
-            v-for="season in seasons"
+            v-for="season in props.seasons"
             :key="season.id"
           >
             <label class="check-list__label">
@@ -179,7 +141,7 @@ const reset = () => {
                 name="collection"
                 checked=""
                 :value="season.id"
-                v-model="formData.seasonIds"
+                v-model="modelValue.seasonIds"
               >
               <span class="check-list__desc">
                 {{ season.title }} 
@@ -194,7 +156,6 @@ const reset = () => {
         Применить
       </button>
       <button class="filter__reset button button--second" type="button"
-        :disabled="!isFiltered"
         @click.prevent="reset"
       >
         Сбросить
