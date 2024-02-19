@@ -12,6 +12,11 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
+      redirect: { name: 'products' },
+    },
+    {
+      path: '/products',
+      name: 'products',
       component: Products
     },
     {
@@ -42,4 +47,4 @@ const router = createRouter({
   ]
 })
 
-export default router
+export default router;
