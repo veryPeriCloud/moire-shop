@@ -3,7 +3,7 @@ import { ref, computed, reactive, watch } from "vue";
 import { useCartStore } from "@/stores/cart";
 import { useOrderStore } from "@/stores/order";
 import { useNumberFormat } from "@/composables/format";
-import { API_BASE_URL } from "@/../config.js";
+import { API_BASE_URL } from "@/assets/ts/config";
 import { useRouter } from "vue-router";
 import OrderCartItem from "@/components/order/OrderCartItem.vue";
 import BaseInput from "@/components/ui/BaseInput.vue";
@@ -190,4 +190,4 @@ const createOrder = async () => {
       </form>
     </section>
   </main>
-</template>
+</template>@/config.js

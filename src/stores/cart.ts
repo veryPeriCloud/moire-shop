@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import { API_BASE_URL } from "@/../config.js";
+import { API_BASE_URL } from "@/assets/ts/config.js";
 
 export const useCartStore = defineStore('cart', {
   state: () => ({ 

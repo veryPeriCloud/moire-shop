@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { useCartStore } from "./cart";
-import { API_BASE_URL } from "@/../config.js";
+import { API_BASE_URL } from "@/assets/ts/config.js";
 import axios from "axios";
 
 export const useOrderStore = defineStore('order', {

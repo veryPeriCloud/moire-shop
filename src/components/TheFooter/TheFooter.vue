@@ -40,20 +40,6 @@
             </svg>
           </a>
         </li>
-        <!-- <li class="social__item">
-          <a class="social__link" href="#" aria-label="Инстаграм">
-            <svg width="17" height="17" fill="currentColor">
-              <use xlink:href="#icon-insta"></use>
-            </svg>
-          </a>
-        </li>
-        <li class="social__item">
-          <a class="social__link" href="#" aria-label="Facebook">
-            <svg width="17" height="17" fill="currentColor">
-              <use xlink:href="#icon-facebook"></use>
-            </svg>
-          </a>
-        </li> -->
         <li class="social__item">
           <a class="social__link" href="#" aria-label="Twitter">
             <svg width="17" height="14" fill="currentColor">
@@ -89,7 +75,7 @@
       </ul>
 
       <span class="footer__copyright">
-        © 2020 Moire
+        © Moire
       </span>
     </div>
   </footer>

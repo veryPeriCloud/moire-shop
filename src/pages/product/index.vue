@@ -4,7 +4,7 @@ import BaseCounter from "@/components/ui/BaseCounter.vue";
 import BaseModal from "@/components/ui/BaseModal.vue";
 import { ref, reactive, computed } from "vue";
 import { useNumberFormat } from "@/composables/format";
-import { API_BASE_URL } from "@/../config.js";
+import { API_BASE_URL } from "@/assets/ts/config";
 import { useRoute } from "vue-router";
 import { useCartStore } from "@/stores/cart";
 import axios from "axios";
@@ -287,3 +287,4 @@ const amount = computed({
   cursor: pointer;
 }
 </style>
+@/config.js

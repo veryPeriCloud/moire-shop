@@ -1,12 +1,11 @@
 
-import { defineStore } from 'pinia';
-import axios from 'axios';
-import { useSerialize } from '@/composables/serialize';
+import { defineStore } from "pinia";
+import axios from "axios";
+import { useSerialize } from "@/composables/serialize";
 import type { IProduct, IFilter, IParams, IProductColors, IProductSeasons, IProductMaterials, IProductCategory, IQuery } from "@/types/Products.d.ts";
+import { API_BASE_URL } from "@/assets/ts/config";
 
-const API_BASE_URL = "https://vue-moire.skillbox.cc";
-
-export const useProductsStore = defineStore('products', {
+export const useProductsStore = defineStore("products", {
   state: () => ({ 
     products: null,
 
