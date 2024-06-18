@@ -17,7 +17,7 @@ onBeforeMount(async()=> {
 <template>
   <The-Header />
   <Suspense>
-    <router-view></router-view>
+    <router-view />
   </Suspense>  
   <The-Footer />
 </template>

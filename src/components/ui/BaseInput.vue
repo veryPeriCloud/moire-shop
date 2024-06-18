@@ -1,29 +1,21 @@
 <script setup lang="ts">
-const props = defineProps({
-  modelValue: {
-    type: [String, Number],
-  },
-  placeholder: {
-    type: String,
-    required: false,
-  },
-  type: {
-    type: String,
-    default: 'text',
-  },
-  title: {
-    type: String,
-    required: false,
-  },
-  error: {
-    type: String,
-    required: false,
-  }
+
+const props = withDefaults(defineProps<{
+  modelValue: string;
+  type: string;
+  placeholder?: string;
+  title?: string;
+  error?: string;
+}>(), {
+  type: "text"
 });
 
-const emit = defineEmits(['update:modelValue']);
-const onInput = (e) => {
-  emit('update:modelValue', e.target.value);
+const emit = defineEmits<{
+  (e: "update:modelValue", value: string): void
+}>();
+
+const onInput = (e: Event) => {
+  emit('update:modelValue', (e.target as HTMLInputElement).value);
 }
 </script>
 

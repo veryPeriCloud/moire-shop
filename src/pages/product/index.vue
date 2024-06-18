@@ -1,85 +1,70 @@
 <script setup lang="ts">
+import { ref, reactive, computed, onBeforeMount } from "vue";
+import { useRoute } from "vue-router";
+import { useCartStore } from "@/stores/cart";
+import { useProductsStore } from "@/stores/products";
+import { useNumberFormat } from "@/composables/format";
 import BaseLoader from "@/components/ui/BaseLoader.vue";
 import BaseCounter from "@/components/ui/BaseCounter.vue";
 import BaseModal from "@/components/ui/BaseModal.vue";
-import { ref, reactive, computed } from "vue";
-import { useNumberFormat } from "@/composables/format";
-import { API_BASE_URL } from "@/assets/ts/config";
-import { useRoute } from "vue-router";
-import { useCartStore } from "@/stores/cart";
-import axios from "axios";
+import type {ITab, IProductFormData } from "@/pages/product/productTypes.d.ts";
 
 const resolved = ref(false);
 const isLoadingFaild = ref(false);
-const productData = ref(null);
-const route = useRoute();
 const currentTab = ref("info");
 const currentProductColor = ref(null);
 const error = ref(false);
 const showModal = ref(false);
 
-const tabs = [
+const route = useRoute();
+const cartStore = useCartStore();
+const productsStore = useProductsStore();
+
+const tabs: ITab[] = [
   { name: "Информация о товаре", code: "info" },
   { name: "Доставка и возврат", code: "delivery" },
 ];
 
-const changeTab = (item) => {
+const changeTab = (item: ITab) => {
   currentTab.value = item.code
 }
 
-const formData = reactive({
+const formData = reactive<IProductFormData>({
   productId: 0,
   colorId: 0,
   sizeId: 0,
   quantity: 1,
 })
 
-const fetchProduct = async() => {
-  axios.get(`${API_BASE_URL}/api/products/${route.params.slug}`)
-    .then((response) => productData.value = response.data)
-    .catch(() => isLoadingFaild.value = true)
-    .then(() => resolved.value = true);
-}
-
-const product = computed(() => productData.value ? productData.value : {});
-await fetchProduct();
+onBeforeMount(async () => {
+  const slug = route.params.slug
+  await productsStore.fetchProduct(slug as string)
+    .then(() => resolved.value = true)
+    .catch(() => isLoadingFaild.value = true);
+});
+const product = computed(() => productsStore.getProduct);
 
 const pic = computed(()=> {  
-  if (currentProductColor.value === null) {
+  if (currentProductColor.value === null &&  product.value) {
     return product.value.colors[0].gallery ?  product.value.colors[0].gallery[0].file.url : '../img/empty.jpg';
   } else {
     return currentProductColor.value.gallery ? currentProductColor.value.gallery[0].file.url : "../img/empty.jpg";
   }
 })
 
-const cartStore = useCartStore();
-
 const addToCart = async() => {
-  formData.quantity = amount.value;
-  formData.productId = productData.value.id;
+  formData.productId = product.value.id;
 
   if (formData.sizeId !== 0 && formData.colorId !== 0) {
     error.value = false;
     await cartStore.addProductToCart(formData)
-    .then(() => {
-      showModal.value = true;
-    });
+      .then(() => {
+        showModal.value = true;
+      });
   } else {
     error.value = true
   }
 }
-
-const productCount = ref(1);
-
-const amount = computed({
-  get() {
-    return productCount.value;
-  },
-  set(value) {
-    productCount.value = value;
-  }
-})
-
 </script>
 
 <template>
@@ -88,7 +73,7 @@ const amount = computed({
   </div>
   <div class="content container" v-if="isLoadingFaild">Произошла ошибка при загрузке товара</div>
 
-  <main class="content container" v-if="resolved">
+  <main class="content container" v-if="product !== null && resolved">
     <div class="content__top">
       <ul class="breadcrumbs">
         <li class="breadcrumbs__item">
@@ -113,13 +98,13 @@ const amount = computed({
         <div class="pics__wrapper">
           <img width="570" height="570"
             :src="pic"
-            :alt="product ? product.title : null ">
+            :alt="product ? product.title : ''">
         </div>
         <ul class="pics__list" v-if="product.colors.length > 1">
           <li class="pics__item" v-for="(color, index) in product.colors" :key="index">
             <a class="pics__link"
               :class="{'pics__link--current' : currentProductColor===color}"
-              @click.prevent="currentProductColor=color"
+              @click.prevent="currentProductColor ? color : null"
             >
               <img width="98" height="98" 
                 :src="color.gallery ? color.gallery[0].file.url : '../img/empty.jpg'"
@@ -140,7 +125,7 @@ const amount = computed({
             @submit.prevent="addToCart"
           >
             <div class="item__row item__row--center">
-              <base-counter v-model.number="amount" />
+              <base-counter v-model.number="formData.quantity" />
              
               <b class="item__price">
                 {{ useNumberFormat(product.price) }} ₽
@@ -161,7 +146,7 @@ const amount = computed({
                         name="color-1"
                         :value="color.color.id"
                         v-model="formData.colorId"
-                        @input="currentProductColor=color"
+                        @input="currentProductColor ? color : null"
                       >
                       <span class="colors__value" :style="{'background-color': color.color.code}">
                       </span>
@@ -190,7 +175,7 @@ const amount = computed({
               В корзину
             </button>
             <p v-if="error">
-              <div>Выберите, пожалуйста, цвет и размер товара</div>
+              Выберите, пожалуйста, цвет и размер товара.
             </p>
           </form>
         </div>
@@ -237,11 +222,8 @@ const amount = computed({
               Вы можете вернуть или обменять товар, купленный в интернет-магазине в течение 14 дней после покупки. 
               В случае обнаружения производственного брака в приобретенном товаре, вы можете вернуть его нам в течение 30 дней с момента покупки.
               Как вернуть товар, если дефектов нет
-
               Не пользуйтесь покупкой, не нарушайте пломбы и фабричные ярлыки.
-
               Проверьте, подлежит ли товар обмену и возврату, предварительно связавшись с менеджером.
-
               Проверьте, сохранился ли чек.
             </p>
           </div>
@@ -249,6 +231,7 @@ const amount = computed({
       </div>
     </section>
   </main>
+
   <teleport to="body">
     <base-modal :show="showModal" >
       <template #body>

@@ -8,6 +8,7 @@ const cartStore = useCartStore();
 const cartProducts = computed(() => cartStore.cartDetailProducts);
 
 </script>
+
 <template>
   <main class="content container">
     <div class="content__top">
@@ -29,7 +30,7 @@ const cartProducts = computed(() => cartStore.cartDetailProducts);
           Корзина
         </h1>
         <span class="content__info">
-          {{ cartStore.cartProducts.length }} товара
+          {{ cartStore.cartProducts.length }} товар
         </span>
       </div>
     </div>
@@ -37,7 +38,7 @@ const cartProducts = computed(() => cartStore.cartDetailProducts);
     <section class="cart">
       <form class="cart__form form" action="#" method="POST">
         <div class="cart__field">
-          <ul class="cart__list">
+          <ul class="cart__list" v-if="cartProducts.length > 0">
             <Cart-Item
               v-for="item in cartProducts"
               :key="item.id"

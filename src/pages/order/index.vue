@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, reactive, watch } from "vue";
+import { ref, computed, reactive, watch, onMounted } from "vue";
 import { useCartStore } from "@/stores/cart";
 import { useOrderStore } from "@/stores/order";
 import { useNumberFormat } from "@/composables/format";
@@ -10,7 +10,6 @@ import BaseInput from "@/components/ui/BaseInput.vue";
 import BaseTextarea from "@/components/ui/BaseTextarea.vue";
 import BaseRadioButton from "@/components/ui/BaseRadioButton.vue";
 import axios from "axios";
-
 
 const formData = reactive({
   name: "",
@@ -32,7 +31,10 @@ let deliveryCost = ref(0);
 const formError = computed(() => orderStore.getErrors);
 const products = computed(() => cartStore.cartDetailProducts);
 
-await orderStore.fetchDeliveries();
+onMounted(async() => {
+  await orderStore.fetchDeliveries();
+})
+
 const deliveries = computed(()=> orderStore.getDeliveries);
 let orderTotalSumm = computed(() => cartStore.getCartTotalSumm);
 
@@ -190,4 +192,4 @@ const createOrder = async () => {
       </form>
     </section>
   </main>
-</template>@/config.js
+</template>
