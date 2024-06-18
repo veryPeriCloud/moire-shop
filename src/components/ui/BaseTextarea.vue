@@ -2,7 +2,7 @@
 
 const props = withDefaults(defineProps<{
   modelValue: string;
-  type: string;
+  type?: string;
   placeholder?: string;
   title?: string;
   error?: string;
@@ -16,7 +16,6 @@ const emit = defineEmits<{
 const onInput = (e: Event) => {
   emit('update:modelValue', (e.target as HTMLInputElement).value);
 }
-
 </script>
 
 <template>

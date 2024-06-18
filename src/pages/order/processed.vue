@@ -3,18 +3,16 @@ import { computed, onMounted } from "vue";
 import { useOrderStore } from "@/stores/order";
 import { useNumberFormat } from "@/composables/format";
 import { useRoute } from "vue-router";
+import type { IOrderInfo } from "@/types/Order";
 
 const orderStore = useOrderStore();
 const route = useRoute();
 
-onMounted(()=> {
-  if (orderStore.$state.orderInfo && orderStore.$state.orderInfo.id === route.params.id){
-    return;
-  }
+onMounted(async()=> {
+  await orderStore.loadOrderInfo(route.params.id);
 })
-await orderStore.loadOrderInfo(route.params.id);
-const orderInfo = computed(()=> orderStore.getOrders);
-const basket = computed(() => orderStore.getOrders.basket.items);
+const orderInfo = computed<IOrderInfo | null>(()=> orderStore.getOrders);
+const basket = computed(() => orderInfo.value ? orderInfo.value.basket.items : []);
 </script>
 
 <template>
@@ -52,7 +50,7 @@ const basket = computed(() => orderStore.getOrders.basket.items);
             Наши менеджеры свяжутся с&nbsp;Вами в&nbsp;течение часа для уточнения деталей доставки.
           </p>
 
-          <ul class="dictionary">
+          <ul class="dictionary" v-if="orderInfo !== null">
             <li class="dictionary__item">
               <span class="dictionary__key">
                 Получатель
@@ -105,7 +103,7 @@ const basket = computed(() => orderStore.getOrders.basket.items);
             </li>
           </ul>
           
-          <div class="cart__total">
+          <div class="cart__total" v-if="orderInfo">
             <p>Доставка: <b>{{ useNumberFormat(orderInfo.deliveryType.price) }}</b></p>
             <p>Итого: <b>{{ basket.length }}</b> товара на сумму <b>{{ useNumberFormat(orderInfo.totalPrice) }} ₽</b></p>
           </div>

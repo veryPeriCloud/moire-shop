@@ -2,7 +2,7 @@
 
 const props = withDefaults(defineProps<{
   modelValue: string;
-  type: string;
+  type?: string;
   placeholder?: string;
   title?: string;
   error?: string;
