@@ -36,4 +36,18 @@ import CartIndicator from "@/components/TheHeader/CartIndicator.vue";
     }
   }
 }
+
+@media (max-width: 640px) {
+  .header {
+    &__info {
+      display: none;
+    }
+    &__tel {
+      display: none;
+    }
+    &__logo {
+      margin: 0;
+    }
+  }
+}
 </style>

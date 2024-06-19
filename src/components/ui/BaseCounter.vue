@@ -40,3 +40,24 @@ const amount = computed({
   </button>
 </div>
 </template>
+
+
+<style scoped>
+.form__counter {
+  height: 40px;
+
+  input {
+    height: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .form__counter {
+
+  input {
+    width: 45px;
+    font-size: 20px;
+  }
+}
+}
+</style>

@@ -3,6 +3,8 @@ import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useNumberFormat } from "@/composables/format.ts";
 
+const route = useRoute();
+
 const props = defineProps({
   product: {
     type:  Object,
@@ -17,9 +19,6 @@ const pic = computed(()=> {
     return currentColor.value.gallery ? currentColor.value.gallery[0].file.url : "./img/empty.jpg";
   }
 })
-
-const route = useRoute();
-
 </script>
 
 <template>

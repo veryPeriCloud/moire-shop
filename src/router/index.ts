@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Products from "@/pages/products/index.vue";
-import ProductPage from "@/pages/product/index.vue";
+import ProductPage from "@/pages/products/[slug].vue";
 import CartPage from "@/pages/cart/index.vue";
 import OrderPage from "@/pages/order/index.vue";
 import OrderInfoPage from "@/pages/order/processed.vue";

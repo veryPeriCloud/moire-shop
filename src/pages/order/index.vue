@@ -160,8 +160,7 @@ const createOrder = async () => {
               <b
                 >{{
                   useNumberFormat(cartStore.getCartTotalSumm + Number(deliveryCost))
-                }}
-                ₽</b
+                }}&nbsp;₽</b
               >
             </p>
           </div>
@@ -189,3 +188,21 @@ const createOrder = async () => {
     </section>
   </main>
 </template>
+
+<style lang="scss" scoped>
+.cart__field {
+  width: 100%;
+}
+@media (max-width:640px) {
+  .options {
+    grid-template-columns: 1fr;
+  }
+
+  .cart {
+    &__data {
+      grid-template-columns: 1fr;
+      grid-gap: 20px;
+    }
+  }
+}
+</style>

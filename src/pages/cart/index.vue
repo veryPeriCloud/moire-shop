@@ -51,7 +51,7 @@ const cartProducts = computed(() => cartStore.cartDetailProducts);
             Мы&nbsp;посчитаем стоимость доставки на&nbsp;следующем этапе
           </p>
           <p class="cart__price">
-            Итого: <span>{{ useNumberFormat(cartStore.getCartTotalSumm) }} ₽</span>
+            Итого: <span>{{ useNumberFormat(cartStore.getCartTotalSumm) }}&nbsp;₽</span>
           </p>
 
           <router-link :to="{name: 'order'}" v-slot="{ href, navigate }">
@@ -67,3 +67,11 @@ const cartProducts = computed(() => cartStore.cartDetailProducts);
     </section>
   </main>
 </template>
+
+<style lang="scss" scoped>
+.cart {
+  &__field {
+    width: 100%;
+  }
+}
+</style>

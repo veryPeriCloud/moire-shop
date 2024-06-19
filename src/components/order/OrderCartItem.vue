@@ -2,12 +2,9 @@
 import { computed } from "vue";
 import { useNumberFormat } from "@/composables/format";
 
-const props = defineProps({
-  item: {
-    type: Object,
-    required: false,
-  }
-});
+const props = defineProps<{
+  item: ICartDetailProduct;
+}>();
 
 const itemTotalPrice = computed(() => props.item.price * props.item.quantity);
 </script>
@@ -16,6 +13,6 @@ const itemTotalPrice = computed(() => props.item.price * props.item.quantity);
   <li class="cart__order">
     <h3>{{ props.item.product.title }}</h3>
     <b>{{ useNumberFormat(itemTotalPrice) }} ₽</b>
-    <span>Артикул: {{ props.item.productId }}</span>
+    <span>Артикул: {{ props.item.product.id }}</span>
   </li>
 </template>
