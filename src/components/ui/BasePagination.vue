@@ -1,28 +1,27 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-const props = defineProps({
-  path: {
-    type: String,
-    required: true,
-  },
-  totalPages: {
-    type: Number,
-    default: 0
-  },
-  query: {
-    type: Object,
-    default: () => {}
-  }
-});
-const emit = defineEmits(['update']);
+interface IQuery {
+  [key: string]: string
+}
+
+const props = defineProps<{
+  path: string;
+  totalPages: number;
+  query: IQuery
+}>();
+
+const emit = defineEmits<{
+  (e: "update", value: string): void
+}>();
+
 const currentPage = computed((): number => {
   return props.query.page !== undefined
     ? parseInt(props.query.page)
     : 1
 });
 
-const getPageUrl = (page: number) => {
+const getPageUrl = (page: number): string => {
   let q = JSON.parse(JSON.stringify(props.query));
   q.page = page;
   return (

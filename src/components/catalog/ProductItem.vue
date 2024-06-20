@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
 import { useNumberFormat } from "@/composables/format.ts";
 
-const route = useRoute();
-
-const props = defineProps({
-  product: {
-    type:  Object,
-  }
-});
+const props = defineProps<{
+  product: IProduct
+}>();
 
 const currentColor = ref(null);
+
 const pic = computed(()=> {
   if (currentColor.value === null) {
     return props.product.image ? props.product.image : "./img/empty.jpg";
@@ -24,7 +20,6 @@ const pic = computed(()=> {
 <template>
   <li class="catalog__item">
     <router-link class="catalog__pic" :to="{name: 'product', params: {slug: product.slug}}">
-      <!-- to change src for color-->
       <img :src="pic" :alt="props.product.title">
     </router-link>
 

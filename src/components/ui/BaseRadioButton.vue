@@ -1,21 +1,17 @@
 <script setup lang="ts">
 
-const props = defineProps({
-  modelValue: {
-    type: Number,
-  },
-  option: {
-    type: Object,
-  },
-  name: {
-    type: String,
-  }
-});
+const props = defineProps<{
+  modelValue: number;
+  option: IDelivery;
+  name: string;
+}>();
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits<{
+  (e: "update:modelValue", value: string): void
+}>();
 
-const onChange = (e) => {
-  emit("update:modelValue", e.target.value);
+const onChange = (e: Event) => {
+  emit("update:modelValue", (e.target as HTMLInputElement).value);
 }
 </script>
 
@@ -26,7 +22,7 @@ const onChange = (e) => {
         class="options__radio sr-only"
         type="radio"
         :name="props.name"
-        :value.number="props.option.id"
+        :value="props.option.id"
         @change="onChange"
       >
       <span class="options__value">

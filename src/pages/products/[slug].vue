@@ -45,17 +45,13 @@ onBeforeMount(async () => {
 });
 const product = computed(() => productsStore.getProduct);
 
-const pic = computed(() => {
-  if (currentProductColor.value === null && product.value) {
-    return product.value.colors[0].gallery
-      ? product.value.colors[0].gallery[0].file.url
-      : "../img/empty.jpg";
+const pic = computed(()=> {  
+  if (currentProductColor.value === null) {
+    return product.value.colors[0].gallery ?  product.value.colors[0].gallery[0].file.url : '../img/empty.jpg';
   } else {
-    return currentProductColor.value.gallery
-      ? currentProductColor.value.gallery[0].file.url
-      : "../img/empty.jpg";
+    return currentProductColor.value.gallery ? currentProductColor.value.gallery[0].file.url : "../img/empty.jpg";
   }
-});
+})
 
 const addToCart = async () => {
   formData.productId = product.value.id;
@@ -113,7 +109,7 @@ const addToCart = async () => {
             <a
               class="pics__link"
               :class="{ 'pics__link--current': currentProductColor === color }"
-              @click.prevent="currentProductColor ? color : null"
+              @click.prevent="currentProductColor = color"
             >
               <img
                 width="98"
@@ -307,6 +303,10 @@ const addToCart = async () => {
   &__select {
     border: 1px solid #e2e2e2;
   }
+}
+
+.item__row--center {
+  margin-bottom: 20px;
 }
 
 @media (max-width:768px) {
