@@ -1,36 +1,25 @@
 <script setup lang="ts">
-const props = defineProps({
-  modelValue: {
-    type: Object,
-    required: true,
-  },
-  categories: {
-    type: Array,
-    required: true,
-  },
-  materials: {
-    type: Array,
-    required: true,
-  },
-  seasons: {
-    type: Array,
-    required: true,
-  },
-  colors: {
-    type: Array,
-    required: true,
-  },
-});
+const props = defineProps<{
+  modelValue: IFilter;
+  categories: IProductCategory[];
+  materials: IProductMaterials[];
+  seasons: IProductSeasons[];
+  colors: IProductColors[];
+}>();
 
-const emit = defineEmits(["update", "reset", "update:modelValue"]);
+const emit = defineEmits<{
+  (e: "update", value: IFilter): void;
+  (e: "reset"): void;
+  (e: "close"): void;
+}>();
 
 const submit = (): void => {
-  emit('update', props.modelValue);
-}
+  emit("update", props.modelValue);
+};
 
-const reset = ():void => {
-  emit('reset');
-}
+const reset = (): void => {
+  emit("reset");
+};
 </script>
 
 <template>

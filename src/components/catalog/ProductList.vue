@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import ProductItem from "@/components/catalog/ProductItem.vue";
 
-const props = defineProps({
-  products: {
-    type:  Array,
-  }
-})
+const props = defineProps<{
+  products: IProduct[]
+}>()
 </script>
 
 <template>

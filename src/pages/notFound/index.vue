@@ -1,6 +1,3 @@
-<script setup lang="ts">
-</script>
-
 <template>
   <main class="content container">
     <p class="not-found">

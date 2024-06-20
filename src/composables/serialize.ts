@@ -13,6 +13,5 @@ export function useSerialize(obj: any) {
       }
     }  
   }
-  console.log('str', str)
   return str.join("&");
 }

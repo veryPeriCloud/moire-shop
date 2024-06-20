@@ -8,6 +8,7 @@ const cartStore = useCartStore();
 const cartProducts = computed(() => cartStore.cartDetailProducts);
 
 </script>
+
 <template>
   <main class="content container">
     <div class="content__top">
@@ -29,7 +30,7 @@ const cartProducts = computed(() => cartStore.cartDetailProducts);
           Корзина
         </h1>
         <span class="content__info">
-          {{ cartStore.cartProducts.length }} товара
+          {{ cartStore.cartProducts.length }} товар
         </span>
       </div>
     </div>
@@ -37,7 +38,7 @@ const cartProducts = computed(() => cartStore.cartDetailProducts);
     <section class="cart">
       <form class="cart__form form" action="#" method="POST">
         <div class="cart__field">
-          <ul class="cart__list">
+          <ul class="cart__list" v-if="cartProducts.length > 0">
             <Cart-Item
               v-for="item in cartProducts"
               :key="item.id"
@@ -50,7 +51,7 @@ const cartProducts = computed(() => cartStore.cartDetailProducts);
             Мы&nbsp;посчитаем стоимость доставки на&nbsp;следующем этапе
           </p>
           <p class="cart__price">
-            Итого: <span>{{ useNumberFormat(cartStore.getCartTotalSumm) }} ₽</span>
+            Итого: <span>{{ useNumberFormat(cartStore.getCartTotalSumm) }}&nbsp;₽</span>
           </p>
 
           <router-link :to="{name: 'order'}" v-slot="{ href, navigate }">
@@ -66,3 +67,11 @@ const cartProducts = computed(() => cartStore.cartDetailProducts);
     </section>
   </main>
 </template>
+
+<style lang="scss" scoped>
+.cart {
+  &__field {
+    width: 100%;
+  }
+}
+</style>

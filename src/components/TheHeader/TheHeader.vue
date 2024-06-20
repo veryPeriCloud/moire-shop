@@ -20,6 +20,34 @@ import CartIndicator from "@/components/TheHeader/CartIndicator.vue";
   </header>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+@media (max-width: 1024px) {
+  .header {
+    &__wrapper {
+      display: flex;
+    }
 
+    &__logo {
+      width: 116px;
+    }
+
+    &__tel {
+      margin-left: 0;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    &__info {
+      display: none;
+    }
+    &__tel {
+      display: none;
+    }
+    &__logo {
+      margin: 0;
+    }
+  }
+}
 </style>
